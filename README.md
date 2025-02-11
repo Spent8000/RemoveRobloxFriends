@@ -2,9 +2,7 @@
 An application that removes friends on ROBLOX
 
 
-To install the program, click on Releases to the right, and download the 'Install_Me.zip' folder.
-
-Extract the folder to any location.
+Thank you for installing my program!
 
 To use the program, edit the file 'EditMe.json' with your Notepad or other text editor.
 
@@ -18,4 +16,4 @@ Run 'UnaddRobloxFriends.exe'.
 
 If all friends are not removed, run again.
 
-For those skeptical, the source code is on GitHub.
+The source code is on GitHub for those skeptical.
