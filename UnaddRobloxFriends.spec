@@ -1,9 +1,5 @@
 # -*- mode: python ; coding: utf-8 -*-
 
-added_files = [
-	( 'EditMe.json'
-),
-]
 
 a = Analysis(
     ['UnaddRobloxFriends.py'],
