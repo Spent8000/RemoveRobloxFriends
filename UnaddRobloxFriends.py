@@ -10,10 +10,10 @@ import json
 # Your info
 with open('EditMe.json') as f:
     d=json.load(f)
-    print(d)
 myUser = d["username"]
 myPassword = d["password"]
 keepFriends = d["friends"]
+API_ENDPOINT = "https://users.roblox.com/v1/usernames/users"
 
 # Gets userID of player
 def getUserId(username):
@@ -34,8 +34,6 @@ options = webdriver.ChromeOptions()
 options.add_argument('--ignore-certificate-errors')
 options.add_argument('--ignore-ssl-errors')
 driver = webdriver.Chrome(options=options)
-driver.maximize_window()
-API_ENDPOINT = "https://users.roblox.com/v1/usernames/users"
 
 # Login to roblox
 driver.get('http://www.roblox.com/login')
@@ -50,34 +48,15 @@ while (driver.current_url != "https://www.roblox.com/home"):
     continue
 driver.get('https://www.roblox.com/users/friends#!/friends')
 
-new_ID_List = []
-running = True
-while running:
-    print(new_ID_List)
-    WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.CLASS_NAME, "avatar-cards")))
-    ID_List = driver.find_element(By.CLASS_NAME, "avatar-cards")
-    ID_List = ID_List.text.split()
-    for name in ID_List:
-        if name[0] == "@":
-            if name[1:] in new_ID_List:
-                running = False
-                break
-            new_ID_List.append(name[1:])
-    try:
-        driver.find_element(By.CLASS_NAME, "pager-next").click()
-    except:
-        running = False
-    time.sleep(1)
-    
-ID_List = []
-for i, playerName in enumerate(new_ID_List):
-    if playerName not in keepFriends:
-        playerID = getUserId(playerName)
-        if playerID != None:
-            ID_List.append(playerID)
+friendList = requests.get(f"https://friends.roblox.com/v1/users/{getUserId(myUser)}/friends").json()["data"]
 
-for i, playerID in enumerate(ID_List):
-    driver.get(f"https://www.roblox.com/users/{playerID}/profile")
-    WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.ID, "unfriend-btn")))
-    driver.find_element(By.ID, "unfriend-btn").click()
-    time.sleep(1)
+for i, player in enumerate(friendList):
+    if player["name"] not in keepFriends:
+        driver.get(f"https://www.roblox.com/users/{player["id"]}/profile")
+        WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.ID, "unfriend-btn")))
+        driver.find_element(By.ID, "unfriend-btn").click()
+        print(f"PURGE STATUS: {round((i + 1) / (len(friendList) - len(keepFriends)) * 100, 2)}%")
+        time.sleep(0.5)
+
+print("PURGE COMPLETED")
+driver.close()
